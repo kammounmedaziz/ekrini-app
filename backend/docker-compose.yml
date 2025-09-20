@@ -1,0 +1,97 @@
+version: '3.8'
+services:
+  # MongoDB Database
+  mongodb:
+    image: mongo:7.0
+    container_name: car-rental-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - car-rental-network
+
+  user-service:
+    build: ./user-service
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./user-service/.env
+    depends_on:
+      - mongodb
+    networks:
+      - car-rental-network
+
+  car-service:
+    build: ./car-service
+    ports:
+      - "3002:3002"
+    env_file:
+      - ./car-service/.env
+    depends_on:
+      - mongodb
+    networks:
+      - car-rental-network
+
+  booking-service:
+    build: ./booking-service
+    ports:
+      - "3003:3003"
+    env_file:
+      - ./booking-service/.env
+    depends_on:
+      - mongodb
+    networks:
+      - car-rental-network
+
+  payment-service:
+    build: ./payment-service
+    ports:
+      - "3004:3004"
+    env_file:
+      - ./payment-service/.env
+    depends_on:
+      - mongodb
+    networks:
+      - car-rental-network
+
+  notification-service:
+    build: ./notification-service
+    ports:
+      - "3005:3005"
+    env_file:
+      - ./notification-service/.env
+    depends_on:
+      - mongodb
+    networks:
+      - car-rental-network
+
+  ai-service:
+    build: ./ai-service
+    ports:
+      - "3006:3006"
+    env_file:
+      - ./ai-service/.env
+    depends_on:
+      - mongodb
+    networks:
+      - car-rental-network
+
+  gateway-service:
+    build: ./gateway-service
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./gateway-service/.env
+    depends_on:
+      - mongodb
+    networks:
+      - car-rental-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  car-rental-network:
+    driver: bridge
